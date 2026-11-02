@@ -21,7 +21,7 @@
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2">
+<link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body>
 
@@ -112,7 +112,7 @@
         </div>
         <div class="field-row" style="margin-top:12px;">
           <div class="field">
-            <label>Material <span class="hint">densidade</span></label>
+            <label><span class="label-main">Material <span class="field-help" tabindex="0" data-tooltip="Tipo de filamento usado na peça. Isso define a densidade usada pra calcular o peso a partir do volume do arquivo.">ⓘ</span></span> <span class="hint">densidade</span></label>
             <select id="stlMaterial">
               <option value="1.24">PLA</option>
               <option value="1.27">PETG</option>
@@ -121,7 +121,7 @@
             </select>
           </div>
           <div class="field">
-            <label>Preenchimento <span class="hint">%</span></label>
+            <label><span class="label-main">Preenchimento <span class="field-help" tabindex="0" data-tooltip="Percentual de preenchimento (infill) configurado no seu fatiador. Quanto maior, mais pesada e resistente a peça fica.">ⓘ</span></span> <span class="hint">%</span></label>
             <input type="number" id="stlInfill" value="20" min="0" max="100" step="5">
           </div>
         </div>
@@ -135,22 +135,22 @@
         <div class="field-group-title">Material</div>
         <div class="field-row">
           <div class="field">
-            <label>Peso da peça <span class="hint">gramas</span></label>
+            <label><span class="label-main">Peso da peça <span class="field-help" tabindex="0" data-tooltip="Peso da peça pronta, em gramas. Se não souber, use o 'Importar STL ou 3MF' acima pra calcular automaticamente a partir do arquivo.">ⓘ</span></span> <span class="hint">gramas</span></label>
             <input type="number" id="peso" value="50" min="0" step="1">
           </div>
           <div class="field">
-            <label>Preço do filamento <span class="hint">R$ / kg</span></label>
+            <label><span class="label-main">Preço do filamento <span class="field-help" tabindex="0" data-tooltip="Quanto você pagou no rolo, dividido pelo peso do rolo. Ex: rolo de R$90 com 1kg → digite 90.">ⓘ</span></span> <span class="hint">R$ / kg</span></label>
             <input type="number" id="filamento" value="90" min="0" step="1">
           </div>
         </div>
         <div class="field">
-          <label>Perda / falhas de impressão <span class="hint">%</span></label>
+          <label><span class="label-main">Perda / falhas de impressão <span class="field-help" tabindex="0" data-tooltip="Margem pra cobrir peças que falham, suporte que vira lixo e sobras de purga. Recomendado entre 5% e 15%.">ⓘ</span></span> <span class="hint">%</span></label>
           <input type="number" id="perda" value="10" min="0" step="1">
         </div>
 
         <div class="field-group-title">Máquina</div>
         <div class="field">
-          <label>Modelo da impressora <span class="hint">preenche a potência</span></label>
+          <label><span class="label-main">Modelo da impressora <span class="field-help" tabindex="0" data-tooltip="Selecione sua impressora pra preencher a potência automaticamente. Se não achar o seu modelo, deixe em branco e digite a potência manualmente abaixo.">ⓘ</span></span> <span class="hint">preenche a potência</span></label>
           <select id="printerPreset">
             <option value="">Selecione (opcional) ou digite a potência manualmente</option>
             <optgroup label="Bambu Lab — dados oficiais">
@@ -173,20 +173,20 @@
         </div>
         <div class="field-row">
           <div class="field">
-            <label>Tempo de impressão <span class="hint">horas</span></label>
+            <label><span class="label-main">Tempo de impressão <span class="field-help" tabindex="0" data-tooltip="Tempo total que o fatiador (slicer) estimou pra essa peça. Fica indicado na tela antes de exportar o G-code.">ⓘ</span></span> <span class="hint">horas</span></label>
             <input type="number" id="tempo" value="3" min="0" step="0.1">
           </div>
           <div class="field">
-            <label>Potência da impressora <span class="hint">watts</span></label>
+            <label><span class="label-main">Potência da impressora <span class="field-help" tabindex="0" data-tooltip="Consumo médio durante a impressão — não é a potência máxima da fonte. Use o campo 'Modelo da impressora' acima pra preencher sozinho.">ⓘ</span></span> <span class="hint">watts</span></label>
             <input type="number" id="potencia" value="120" min="0" step="1">
           </div>
         </div>
         <div class="field">
-          <label>Preço da energia <span class="hint">R$ / kWh</span></label>
+          <label><span class="label-main">Preço da energia <span class="field-help" tabindex="0" data-tooltip="Valor do kWh na sua conta de luz. Olhe sua última fatura — no Brasil costuma ficar entre R$0,70 e R$1,00.">ⓘ</span></span> <span class="hint">R$ / kWh</span></label>
           <input type="number" id="kwh" value="0.85" min="0" step="0.01">
         </div>
         <div class="field">
-          <label>Desgaste / depreciação da máquina <span class="hint">R$ / hora</span></label>
+          <label><span class="label-main">Desgaste / depreciação da máquina <span class="field-help" tabindex="0" data-tooltip="Quanto da impressora 'se gasta' a cada hora de uso (ela não dura pra sempre). Não sabe o valor? Use o cálculo automático logo abaixo.">ⓘ</span></span> <span class="hint">R$ / hora</span></label>
           <input type="number" id="desgaste" value="2" min="0" step="0.1">
         </div>
         <details class="subcalc">
@@ -207,27 +207,27 @@
         <div class="field-group-title">Mão de obra e extras</div>
         <div class="field-row">
           <div class="field">
-            <label>Pós-processamento <span class="hint">horas</span></label>
+            <label><span class="label-main">Pós-processamento <span class="field-help" tabindex="0" data-tooltip="Tempo que você gasta lixando, pintando, removendo suportes ou montando a peça depois de impressa.">ⓘ</span></span> <span class="hint">horas</span></label>
             <input type="number" id="tempoPos" value="0.5" min="0" step="0.1">
           </div>
           <div class="field">
-            <label>Valor da sua hora <span class="hint">R$ / hora</span></label>
+            <label><span class="label-main">Valor da sua hora <span class="field-help" tabindex="0" data-tooltip="Quanto vale uma hora do seu trabalho. Pode ser o que você ganharia numa hora de trabalho normal, ou um valor mínimo que ache justo.">ⓘ</span></span> <span class="hint">R$ / hora</span></label>
             <input type="number" id="valorHora" value="20" min="0" step="1">
           </div>
         </div>
         <div class="field">
-          <label>Embalagem / extras <span class="hint">R$</span></label>
+          <label><span class="label-main">Embalagem / extras <span class="field-help" tabindex="0" data-tooltip="Caixa, plástico bolha, etiqueta ou qualquer outro custo extra além do material pra entregar a peça.">ⓘ</span></span> <span class="hint">R$</span></label>
           <input type="number" id="embalagem" value="0" min="0" step="1">
         </div>
 
         <div class="field-group-title">Venda</div>
         <div class="field-row">
           <div class="field">
-            <label>Taxa da maquininha/Pix <span class="hint">%</span></label>
+            <label><span class="label-main">Taxa da maquininha/Pix <span class="field-help" tabindex="0" data-tooltip="Percentual que o Mercado Pago, cartão ou outra maquininha desconta da venda. Pix direto na chave costuma ser 0%.">ⓘ</span></span> <span class="hint">%</span></label>
             <input type="number" id="taxa" value="6" min="0" step="1">
           </div>
           <div class="field">
-            <label>Margem de lucro desejada <span class="hint">%</span></label>
+            <label><span class="label-main">Margem de lucro desejada <span class="field-help" tabindex="0" data-tooltip="Quanto você quer ganhar em cima do custo. Ex: 100% significa dobrar o custo total pra chegar no preço de venda.">ⓘ</span></span> <span class="hint">%</span></label>
             <input type="number" id="margem" value="60" min="0" step="5">
           </div>
         </div>
@@ -430,8 +430,8 @@
   </div>
 </footer>
 
-<script src="js/stl-parser.js?v=2"></script>
-<script src="js/calculadora.js?v=2"></script>
-<script src="js/main.js?v=2"></script>
+<script src="js/stl-parser.js?v=3"></script>
+<script src="js/calculadora.js?v=3"></script>
+<script src="js/main.js?v=3"></script>
 </body>
 </html>
