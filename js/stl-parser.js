@@ -136,7 +136,7 @@ async function readZipEntryData(view, bytes, entry) {
   throw new Error('Método de compressão do .3mf não suportado.');
 }
 
-async function extractZipEntry(arrayBuffer, targetPath) {
+function indexZipEntries(arrayBuffer) {
   const bytes = new Uint8Array(arrayBuffer);
   const view = new DataView(arrayBuffer);
 
@@ -154,8 +154,7 @@ async function extractZipEntry(arrayBuffer, targetPath) {
 
   let offset = cdOffset;
   const CD_SIG = 0x02014b50;
-  let found = null;
-  let fallbackModel = null;
+  const entries = new Map();
 
   for (let i = 0; i < cdEntryCount; i++) {
     if (view.getUint32(offset, true) !== CD_SIG) break;
@@ -167,16 +166,17 @@ async function extractZipEntry(arrayBuffer, targetPath) {
     const localHeaderOffset = view.getUint32(offset + 42, true);
     const name = new TextDecoder('utf-8').decode(bytes.subarray(offset + 46, offset + 46 + nameLen));
 
-    const entry = { name, compMethod, compSize, localHeaderOffset };
-    if (name === targetPath) { found = entry; break; }
-    if (!fallbackModel && /\.model$/i.test(name)) fallbackModel = entry;
-
+    entries.set(name, { compMethod, compSize, localHeaderOffset });
     offset += 46 + nameLen + extraLen + commentLen;
   }
 
-  const entry = found || fallbackModel;
-  if (!entry) throw new Error('Não encontrei o modelo 3D dentro do arquivo .3mf.');
-  return readZipEntryData(view, bytes, entry);
+  return { bytes, view, entries };
+}
+
+async function readZipEntryByName(zip, name) {
+  const entry = zip.entries.get(name);
+  if (!entry) return null;
+  return readZipEntryData(zip.view, zip.bytes, entry);
 }
 
 const MF_UNIT_TO_MM = { micron: 0.001, millimeter: 1, centimeter: 10, inch: 25.4, foot: 304.8, meter: 1000 };
@@ -221,52 +221,122 @@ function combine3MFTransforms(inner, outer) {
   return [R[0][0], R[0][1], R[0][2], R[1][0], R[1][1], R[1][2], R[2][0], R[2][1], R[2][2], R[3][0], R[3][1], R[3][2]];
 }
 
+// Extração por regex em vez de DOMParser — arquivos de malha de fatiadores
+// podem ter dezenas de MB e milhões de triângulos; montar uma árvore DOM pra
+// isso é lento demais (testado: ~20s num modelo de 2,6M triângulos). Como o
+// XML do 3MF é bem regular, ler direto do texto é muito mais rápido.
+
+function getAttr(attrsStr, name) {
+  const m = new RegExp('\\b' + name + '="([^"]*)"').exec(attrsStr);
+  return m ? m[1] : null;
+}
+
+function extractObjectBlock(text, objectId) {
+  const re = new RegExp('<object\\b[^>]*\\bid="' + objectId + '"[^>]*>([\\s\\S]*?)<\\/object>', 'i');
+  const m = re.exec(text);
+  return m ? m[1] : null;
+}
+
+function extractMeshVertsTris(objectBlock) {
+  const meshMatch = /<mesh\b[^>]*>([\s\S]*?)<\/mesh>/i.exec(objectBlock);
+  if (!meshMatch) return null;
+  const meshText = meshMatch[1];
+
+  const verts = [];
+  const vertRe = /<vertex\s+x="([^"]*)"\s+y="([^"]*)"\s+z="([^"]*)"/g;
+  let vm;
+  while ((vm = vertRe.exec(meshText))) verts.push([parseFloat(vm[1]), parseFloat(vm[2]), parseFloat(vm[3])]);
+
+  const tris = [];
+  const triRe = /<triangle\s+v1="(\d+)"\s+v2="(\d+)"\s+v3="(\d+)"/g;
+  let tm;
+  while ((tm = triRe.exec(meshText))) tris.push([parseInt(tm[1], 10), parseInt(tm[2], 10), parseInt(tm[3], 10)]);
+
+  return { verts, tris };
+}
+
+function extractComponents(objectBlock) {
+  const comps = [];
+  const compRe = /<component\b([^>]*?)\/?>/g;
+  let cm;
+  while ((cm = compRe.exec(objectBlock))) {
+    const attrs = cm[1];
+    const objectid = getAttr(attrs, 'objectid');
+    if (!objectid) continue;
+    comps.push({
+      objectid,
+      transform: getAttr(attrs, 'transform'),
+      path: getAttr(attrs, 'p:path') || getAttr(attrs, 'path'),
+    });
+  }
+  return comps;
+}
+
+function extractBuildItems(fullText) {
+  const buildMatch = /<build\b[^>]*>([\s\S]*?)<\/build>/i.exec(fullText);
+  const buildBlock = buildMatch ? buildMatch[1] : '';
+  const items = [];
+  const itemRe = /<item\b([^>]*?)\/?>/g;
+  let im;
+  while ((im = itemRe.exec(buildBlock))) {
+    const attrs = im[1];
+    const objectid = getAttr(attrs, 'objectid');
+    if (objectid) items.push({ objectid, transform: getAttr(attrs, 'transform') });
+  }
+  return items;
+}
+
 async function parse3MF(arrayBuffer) {
-  const modelXmlBytes = await extractZipEntry(arrayBuffer, '3D/3dmodel.model');
-  const xmlText = new TextDecoder('utf-8').decode(modelXmlBytes);
-  const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+  // Fatiadores como o Bambu Studio/OrcaSlicer costumam dividir o modelo em
+  // vários arquivos dentro do mesmo .3mf (um por peça), e o arquivo principal
+  // só referencia os outros via <component p:path="...">. Por isso lemos o
+  // índice do ZIP uma vez e resolvemos cada referência sob demanda.
+  const zip = indexZipEntries(arrayBuffer);
 
-  if (doc.querySelector('parsererror')) {
-    throw new Error('Não consegui interpretar o XML do arquivo 3MF.');
+  let mainPath = '3D/3dmodel.model';
+  if (!zip.entries.has(mainPath)) {
+    const found = [...zip.entries.keys()].find((n) => /\.model$/i.test(n));
+    if (!found) throw new Error('Não encontrei o modelo 3D dentro do arquivo .3mf.');
+    mainPath = found;
   }
 
-  const modelEl = doc.getElementsByTagNameNS('*', 'model')[0];
-  const unit = (modelEl && modelEl.getAttribute('unit')) || 'millimeter';
-  const scale = MF_UNIT_TO_MM[unit] || 1;
-
-  // indexa todos os <object> por id, pra resolver referências de <item> e <component>
-  const objects = {};
-  for (const obj of doc.getElementsByTagNameNS('*', 'object')) {
-    objects[obj.getAttribute('id')] = obj;
+  const textCache = new Map();
+  async function getText(path) {
+    const clean = path.replace(/^\/+/, '');
+    if (textCache.has(clean)) return textCache.get(clean);
+    const dataBytes = await readZipEntryByName(zip, clean);
+    if (!dataBytes) throw new Error('Não encontrei uma das peças referenciadas no arquivo 3MF (' + clean + ').');
+    const text = new TextDecoder('utf-8').decode(dataBytes);
+    textCache.set(clean, text);
+    return text;
   }
+
+  const mainText = await getText(mainPath);
+  const unitMatch = /<model\b[^>]*\bunit="([^"]*)"/i.exec(mainText);
+  const scale = MF_UNIT_TO_MM[unitMatch ? unitMatch[1] : 'millimeter'] || 1;
 
   let volume = 0;
   const min = [Infinity, Infinity, Infinity];
   const max = [-Infinity, -Infinity, -Infinity];
   let triCount = 0;
-  const seen = new Set(); // evita loop infinito em componentes mal formados
 
-  function processObject(objEl, transform) {
-    if (!objEl || seen.has(objEl)) return;
-    seen.add(objEl);
+  async function processRef(path, objectId, transform, depth) {
+    if (depth > 12 || !objectId) return; // guarda contra referência circular/profundidade excessiva
 
-    const meshEl = objEl.getElementsByTagNameNS('*', 'mesh')[0];
-    if (meshEl) {
-      const vertexEls = meshEl.getElementsByTagNameNS('*', 'vertex');
-      const verts = [];
-      for (const v of vertexEls) {
-        const raw = [
-          parseFloat(v.getAttribute('x')) * scale,
-          parseFloat(v.getAttribute('y')) * scale,
-          parseFloat(v.getAttribute('z')) * scale,
-        ];
-        verts.push(apply3MFTransform(raw, transform));
+    const text = path ? await getText(path) : mainText;
+    const block = extractObjectBlock(text, objectId);
+    if (block === null) return;
+
+    const meshData = extractMeshVertsTris(block);
+    if (meshData) {
+      const verts = new Array(meshData.verts.length);
+      for (let i = 0; i < meshData.verts.length; i++) {
+        const v = meshData.verts[i];
+        verts[i] = apply3MFTransform([v[0] * scale, v[1] * scale, v[2] * scale], transform);
       }
-      const triEls = meshEl.getElementsByTagNameNS('*', 'triangle');
-      for (const t of triEls) {
-        const p1 = verts[parseInt(t.getAttribute('v1'), 10)];
-        const p2 = verts[parseInt(t.getAttribute('v2'), 10)];
-        const p3 = verts[parseInt(t.getAttribute('v3'), 10)];
+      for (let i = 0; i < meshData.tris.length; i++) {
+        const [i1, i2, i3] = meshData.tris[i];
+        const p1 = verts[i1], p2 = verts[i2], p3 = verts[i3];
         if (!p1 || !p2 || !p3) continue;
         volume += signedVolumeOfTriangle(p1, p2, p3);
         updateBounds(p1, min, max);
@@ -276,24 +346,25 @@ async function parse3MF(arrayBuffer) {
       }
     }
 
-    for (const comp of objEl.getElementsByTagNameNS('*', 'component')) {
-      const refObj = objects[comp.getAttribute('objectid')];
-      const compTransform = parse3MFTransform(comp.getAttribute('transform'));
-      processObject(refObj, combine3MFTransforms(compTransform, transform));
+    const comps = extractComponents(block);
+    for (let i = 0; i < comps.length; i++) {
+      const comp = comps[i];
+      const compTransform = parse3MFTransform(comp.transform);
+      const combined = combine3MFTransforms(compTransform, transform);
+      await processRef(comp.path, comp.objectid, combined, depth + 1);
     }
-    seen.delete(objEl);
   }
 
-  const buildItems = doc.getElementsByTagNameNS('*', 'item');
+  const buildItems = extractBuildItems(mainText);
   if (buildItems.length > 0) {
-    for (const item of buildItems) {
-      const refObj = objects[item.getAttribute('objectid')];
-      const transform = parse3MFTransform(item.getAttribute('transform'));
-      processObject(refObj, transform);
+    for (let i = 0; i < buildItems.length; i++) {
+      const transform = parse3MFTransform(buildItems[i].transform);
+      await processRef(null, buildItems[i].objectid, transform, 0);
     }
   } else {
-    // sem <build> (incomum) — soma todos os objetos como estão, sem transformação
-    for (const id in objects) processObject(objects[id], null);
+    // sem <build> (incomum) — soma todos os objetos do arquivo principal como estão
+    const ids = [...mainText.matchAll(/<object\b[^>]*\bid="([^"]+)"/g)].map((m) => m[1]);
+    for (const id of ids) await processRef(null, id, null, 0);
   }
 
   if (triCount === 0) throw new Error('Nenhuma malha encontrada no arquivo 3MF.');
