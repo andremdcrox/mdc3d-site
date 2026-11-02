@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://andremdcrox.github.io/mdc3d-site/sitemap.xml
