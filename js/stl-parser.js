@@ -181,6 +181,46 @@ async function extractZipEntry(arrayBuffer, targetPath) {
 
 const MF_UNIT_TO_MM = { micron: 0.001, millimeter: 1, centimeter: 10, inch: 25.4, foot: 304.8, meter: 1000 };
 
+function parse3MFTransform(str) {
+  if (!str) return null;
+  const n = str.trim().split(/\s+/).map(Number);
+  if (n.length !== 12 || n.some(Number.isNaN)) return null;
+  return n; // [m00,m01,m02, m10,m11,m12, m20,m21,m22, m30,m31,m32] (linha a linha, 4x3)
+}
+
+function apply3MFTransform(v, m) {
+  if (!m) return v;
+  return [
+    v[0] * m[0] + v[1] * m[3] + v[2] * m[6] + m[9],
+    v[0] * m[1] + v[1] * m[4] + v[2] * m[7] + m[10],
+    v[0] * m[2] + v[1] * m[5] + v[2] * m[8] + m[11],
+  ];
+}
+
+function combine3MFTransforms(inner, outer) {
+  // combina transform de um <component> (inner) com o transform acumulado do pai (outer):
+  // ponto final = outer(inner(ponto)) — aplica inner primeiro, depois outer.
+  if (!inner) return outer;
+  if (!outer) return inner;
+  const toMat4 = (m) => [
+    [m[0], m[1], m[2], 0],
+    [m[3], m[4], m[5], 0],
+    [m[6], m[7], m[8], 0],
+    [m[9], m[10], m[11], 1],
+  ];
+  const A = toMat4(inner), B = toMat4(outer);
+  const R = [];
+  for (let i = 0; i < 4; i++) {
+    R[i] = [];
+    for (let j = 0; j < 4; j++) {
+      let s = 0;
+      for (let k = 0; k < 4; k++) s += A[i][k] * B[k][j];
+      R[i][j] = s;
+    }
+  }
+  return [R[0][0], R[0][1], R[0][2], R[1][0], R[1][1], R[1][2], R[2][0], R[2][1], R[2][2], R[3][0], R[3][1], R[3][2]];
+}
+
 async function parse3MF(arrayBuffer) {
   const modelXmlBytes = await extractZipEntry(arrayBuffer, '3D/3dmodel.model');
   const xmlText = new TextDecoder('utf-8').decode(modelXmlBytes);
@@ -194,34 +234,66 @@ async function parse3MF(arrayBuffer) {
   const unit = (modelEl && modelEl.getAttribute('unit')) || 'millimeter';
   const scale = MF_UNIT_TO_MM[unit] || 1;
 
+  // indexa todos os <object> por id, pra resolver referências de <item> e <component>
+  const objects = {};
+  for (const obj of doc.getElementsByTagNameNS('*', 'object')) {
+    objects[obj.getAttribute('id')] = obj;
+  }
+
   let volume = 0;
   const min = [Infinity, Infinity, Infinity];
   const max = [-Infinity, -Infinity, -Infinity];
   let triCount = 0;
+  const seen = new Set(); // evita loop infinito em componentes mal formados
 
-  const meshes = doc.getElementsByTagNameNS('*', 'mesh');
-  for (const mesh of meshes) {
-    const vertexEls = mesh.getElementsByTagNameNS('*', 'vertex');
-    const verts = [];
-    for (const v of vertexEls) {
-      verts.push([
-        parseFloat(v.getAttribute('x')) * scale,
-        parseFloat(v.getAttribute('y')) * scale,
-        parseFloat(v.getAttribute('z')) * scale,
-      ]);
+  function processObject(objEl, transform) {
+    if (!objEl || seen.has(objEl)) return;
+    seen.add(objEl);
+
+    const meshEl = objEl.getElementsByTagNameNS('*', 'mesh')[0];
+    if (meshEl) {
+      const vertexEls = meshEl.getElementsByTagNameNS('*', 'vertex');
+      const verts = [];
+      for (const v of vertexEls) {
+        const raw = [
+          parseFloat(v.getAttribute('x')) * scale,
+          parseFloat(v.getAttribute('y')) * scale,
+          parseFloat(v.getAttribute('z')) * scale,
+        ];
+        verts.push(apply3MFTransform(raw, transform));
+      }
+      const triEls = meshEl.getElementsByTagNameNS('*', 'triangle');
+      for (const t of triEls) {
+        const p1 = verts[parseInt(t.getAttribute('v1'), 10)];
+        const p2 = verts[parseInt(t.getAttribute('v2'), 10)];
+        const p3 = verts[parseInt(t.getAttribute('v3'), 10)];
+        if (!p1 || !p2 || !p3) continue;
+        volume += signedVolumeOfTriangle(p1, p2, p3);
+        updateBounds(p1, min, max);
+        updateBounds(p2, min, max);
+        updateBounds(p3, min, max);
+        triCount++;
+      }
     }
-    const triEls = mesh.getElementsByTagNameNS('*', 'triangle');
-    for (const t of triEls) {
-      const p1 = verts[parseInt(t.getAttribute('v1'), 10)];
-      const p2 = verts[parseInt(t.getAttribute('v2'), 10)];
-      const p3 = verts[parseInt(t.getAttribute('v3'), 10)];
-      if (!p1 || !p2 || !p3) continue;
-      volume += signedVolumeOfTriangle(p1, p2, p3);
-      updateBounds(p1, min, max);
-      updateBounds(p2, min, max);
-      updateBounds(p3, min, max);
-      triCount++;
+
+    for (const comp of objEl.getElementsByTagNameNS('*', 'component')) {
+      const refObj = objects[comp.getAttribute('objectid')];
+      const compTransform = parse3MFTransform(comp.getAttribute('transform'));
+      processObject(refObj, combine3MFTransforms(compTransform, transform));
     }
+    seen.delete(objEl);
+  }
+
+  const buildItems = doc.getElementsByTagNameNS('*', 'item');
+  if (buildItems.length > 0) {
+    for (const item of buildItems) {
+      const refObj = objects[item.getAttribute('objectid')];
+      const transform = parse3MFTransform(item.getAttribute('transform'));
+      processObject(refObj, transform);
+    }
+  } else {
+    // sem <build> (incomum) — soma todos os objetos como estão, sem transformação
+    for (const id in objects) processObject(objects[id], null);
   }
 
   if (triCount === 0) throw new Error('Nenhuma malha encontrada no arquivo 3MF.');
