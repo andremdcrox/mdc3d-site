@@ -14,7 +14,7 @@ function num(id) {
   return isFinite(v) && v >= 0 ? v : 0;
 }
 
-function calcular() {
+function getCustoTotal() {
   const peso = num('peso');                 // g
   const filamentoKg = num('filamento');      // R$/kg
   const perda = num('perda');                // %
@@ -25,35 +25,45 @@ function calcular() {
   const tempoPos = num('tempoPos');          // horas
   const valorHora = num('valorHora');        // R$/h
   const embalagem = num('embalagem');        // R$
-  const taxa = clamp(num('taxa'), 0, 90);    // %
-  const margem = num('margem');              // %
 
   const custoMaterial = (peso / 1000) * filamentoKg * (1 + perda / 100);
   const custoEnergia = tempo * (potencia / 1000) * kwh;
   const custoMaquina = tempo * desgasteHora;
   const custoMaoObra = tempoPos * valorHora;
   const custoEmbalagem = embalagem;
-  const custoTotal = custoMaterial + custoEnergia + custoMaquina + custoMaoObra + custoEmbalagem;
 
-  const taxaFrac = taxa / 100;
-  const margemFrac = margem / 100;
-  const divisorTaxa = Math.max(0.05, 1 - taxaFrac); // nunca deixa dividir por ~0
+  return {
+    custoMaterial, custoEnergia, custoMaquina, custoMaoObra, custoEmbalagem,
+    total: custoMaterial + custoEnergia + custoMaquina + custoMaoObra + custoEmbalagem,
+  };
+}
+
+function getDivisorTaxa() {
+  const taxa = clamp(num('taxa'), 0, 90);
+  return Math.max(0.05, 1 - taxa / 100); // nunca deixa dividir por ~0
+}
+
+function calcular() {
+  const custos = getCustoTotal();
+  const divisorTaxa = getDivisorTaxa();
+  const margemFrac = num('margem') / 100;
+  const taxaFrac = 1 - divisorTaxa;
 
   // mínimo seguro: custo total + 30% de colchão de segurança, já líquido da taxa de venda
-  const precoMinimo = (custoTotal * 1.3) / divisorTaxa;
+  const precoMinimo = (custos.total * 1.3) / divisorTaxa;
   // preço sugerido: baseado na margem de lucro escolhida pelo usuário
-  const precoSugerido = (custoTotal * (1 + margemFrac)) / divisorTaxa;
+  const precoSugerido = (custos.total * (1 + margemFrac)) / divisorTaxa;
   // teto de mercado: markup de 3x o custo total (referência comum em guias de precificação de impressão 3D)
-  const precoMaximo = (custoTotal * 3) / divisorTaxa;
+  const precoMaximo = (custos.total * 3) / divisorTaxa;
   // lucro líquido estimado no preço sugerido, já descontando a taxa de venda
-  const lucroEstimado = precoSugerido * (1 - taxaFrac) - custoTotal;
+  const lucroEstimado = precoSugerido * (1 - taxaFrac) - custos.total;
 
-  setText('r-material', brlFmt(custoMaterial));
-  setText('r-energia', brlFmt(custoEnergia));
-  setText('r-desgaste', brlFmt(custoMaquina));
-  setText('r-maoobra', brlFmt(custoMaoObra));
-  setText('r-embalagem', brlFmt(custoEmbalagem));
-  setText('r-total', brlFmt(custoTotal));
+  setText('r-material', brlFmt(custos.custoMaterial));
+  setText('r-energia', brlFmt(custos.custoEnergia));
+  setText('r-desgaste', brlFmt(custos.custoMaquina));
+  setText('r-maoobra', brlFmt(custos.custoMaoObra));
+  setText('r-embalagem', brlFmt(custos.custoEmbalagem));
+  setText('r-total', brlFmt(custos.total));
   setText('r-final', brlFmt(precoSugerido));
   setText('r-lucro', brlFmt(lucroEstimado));
 
@@ -61,16 +71,34 @@ function calcular() {
   aplicarStatus(precoMinimo, precoSugerido, precoMaximo);
 }
 
-function aplicarStatus(minimo, sugerido, maximo) {
-  let status, icon, label;
-  if (sugerido < minimo) {
-    status = 'risk'; icon = '⚠️'; label = 'Sem margem — risco de prejuízo';
-  } else if (sugerido < maximo) {
-    status = 'normal'; icon = '🟠'; label = 'Lucro normal';
-  } else {
-    status = 'excelente'; icon = '✅'; label = 'Lucro excelente';
-  }
+// Recalcula a margem de lucro necessária pra atingir um preço escolhido
+// (usado ao arrastar o marcador do gráfico) e refaz o cálculo inteiro.
+function updateMarginFromPrice(price) {
+  const custos = getCustoTotal();
+  const divisorTaxa = getDivisorTaxa();
+  if (custos.total <= 0) return;
 
+  const margemFrac = (price * divisorTaxa) / custos.total - 1;
+  const margemEl = document.getElementById('margem');
+  if (margemEl) margemEl.value = Math.max(0, margemFrac * 100).toFixed(0);
+  calcular();
+}
+
+const STATUS_LABELS = {
+  risk: { icon: '⚠️', label: 'Sem margem — risco de prejuízo', mouth: 'M30,66 Q50,52 70,66' },
+  normal: { icon: '🟠', label: 'Lucro normal', mouth: 'M32,62 Q50,62 68,62' },
+  excelente: { icon: '✅', label: 'Lucro excelente', mouth: 'M28,56 Q50,78 72,56' },
+};
+
+function aplicarStatus(minimo, sugerido, maximo) {
+  let status;
+  if (sugerido < minimo) status = 'risk';
+  else if (sugerido < maximo) status = 'normal';
+  else status = 'excelente';
+
+  const { icon, label, mouth } = STATUS_LABELS[status];
+  const mouthEl = document.getElementById('face-mouth');
+  if (mouthEl) mouthEl.setAttribute('d', mouth);
   const classes = ['status-risk', 'status-normal', 'status-excelente'];
   const statusClass = 'status-' + status;
 
@@ -83,6 +111,7 @@ function aplicarStatus(minimo, sugerido, maximo) {
 
   setText('status-icon', icon);
   setText('status-text', label);
+  setText('chart-marker-status', icon + ' ' + label);
 }
 
 function setText(id, text) {
@@ -90,10 +119,13 @@ function setText(id, text) {
   if (el) el.textContent = text;
 }
 
+let lastChartDomain = null;
+
 function desenharGrafico(minimo, sugerido, maximo) {
   let domainMin = Math.max(0, Math.min(minimo, sugerido) * 0.85);
   let domainMax = Math.max(maximo, sugerido) * 1.15;
   if (domainMax <= domainMin) domainMax = domainMin + 1;
+  lastChartDomain = { min: domainMin, max: domainMax };
 
   const pct = (v) => clamp(((v - domainMin) / (domainMax - domainMin)) * 100, 0, 100);
 
@@ -116,8 +148,85 @@ function desenharGrafico(minimo, sugerido, maximo) {
   setText('tick-max-val', brlFmt(maximo));
 
   const marker = document.getElementById('chart-marker');
-  if (marker) marker.style.left = markerPct + '%';
+  if (marker) {
+    marker.style.left = markerPct + '%';
+    marker.setAttribute('aria-valuenow', markerPct.toFixed(0));
+    marker.setAttribute('aria-valuetext', brlFmt(sugerido));
+  }
   setText('chart-marker-val', brlFmt(sugerido));
+}
+
+function initChartDrag() {
+  const chart = document.getElementById('price-chart');
+  const marker = document.getElementById('chart-marker');
+  const trackWrap = document.getElementById('chart-track-wrap');
+  if (!chart || !marker || !trackWrap) return;
+
+  let dragging = false;
+  let rafId = null;
+
+  function pctFromClientX(clientX) {
+    const rect = trackWrap.getBoundingClientRect();
+    return clamp(((clientX - rect.left) / rect.width) * 100, 0, 100);
+  }
+
+  function applyPct(pctValue) {
+    if (!lastChartDomain) return;
+    const price = lastChartDomain.min + (pctValue / 100) * (lastChartDomain.max - lastChartDomain.min);
+    updateMarginFromPrice(price);
+  }
+
+  function scheduleApply(clientX) {
+    const pctValue = pctFromClientX(clientX);
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      rafId = null;
+      applyPct(pctValue);
+    });
+  }
+
+  function startDrag(clientX, pointerId) {
+    dragging = true;
+    chart.classList.add('dragging');
+    if (pointerId !== undefined) marker.setPointerCapture(pointerId);
+    scheduleApply(clientX);
+  }
+
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false;
+    chart.classList.remove('dragging');
+  }
+
+  marker.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    startDrag(e.clientX, e.pointerId);
+  });
+  marker.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    scheduleApply(e.clientX);
+  });
+  marker.addEventListener('pointerup', endDrag);
+  marker.addEventListener('pointercancel', endDrag);
+
+  // clicar em qualquer ponto da trilha pula o marcador pra lá
+  trackWrap.addEventListener('click', (e) => {
+    scheduleApply(e.clientX);
+  });
+
+  // acessibilidade: setas do teclado ajustam o preço em passos de 1%
+  marker.addEventListener('keydown', (e) => {
+    if (!lastChartDomain) return;
+    const currentLeft = parseFloat(marker.style.left) || 50;
+    const step = 1;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+      applyPct(clamp(currentLeft - step, 0, 100));
+      e.preventDefault();
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+      applyPct(clamp(currentLeft + step, 0, 100));
+      e.preventDefault();
+    }
+  });
 }
 
 let currentSTLResult = null;
@@ -203,6 +312,7 @@ function initPrinterPreset() {
 document.addEventListener('DOMContentLoaded', () => {
   initSTLImport();
   initPrinterPreset();
+  initChartDrag();
 
   document.querySelectorAll('.calc-wrap input, .calc-wrap select').forEach(input => {
     input.addEventListener('input', calcular);

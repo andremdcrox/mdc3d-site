@@ -23,7 +23,7 @@
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=6">
+<link rel="stylesheet" href="css/style.css?v=8">
 </head>
 <body>
 
@@ -261,16 +261,33 @@
           <span id="status-icon">✅</span> <span id="status-text">Lucro excelente</span>
         </div>
 
-        <div class="price-chart">
-          <div class="chart-marker" id="chart-marker" style="left:50%">
-            <div class="dot"></div>
-            <div class="lbl">Seu preço<br><strong id="chart-marker-val">R$ 0,00</strong></div>
+        <div class="price-chart" id="price-chart">
+          <div class="chart-marker" id="chart-marker" style="left:50%" tabindex="0" role="slider" aria-label="Arraste para ajustar o preço de venda" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+            <div class="connector"></div>
+            <div class="dot">
+              <svg class="face" viewBox="0 0 100 100">
+                <line class="face-brow" x1="22" y1="32" x2="38" y2="40"/>
+                <line class="face-brow" x1="78" y1="32" x2="62" y2="40"/>
+                <path class="face-sweat" d="M80,24 Q86,34 80,41 Q74,34 80,24 Z"/>
+                <circle class="face-eye" cx="34" cy="46" r="6"/>
+                <circle class="face-eye" cx="66" cy="46" r="6"/>
+                <path class="face-eye-happy" d="M24,45 Q34,35 44,45"/>
+                <path class="face-eye-happy" d="M56,45 Q66,35 76,45"/>
+                <ellipse class="face-cheek" cx="20" cy="60" rx="7" ry="4.5"/>
+                <ellipse class="face-cheek" cx="80" cy="60" rx="7" ry="4.5"/>
+                <path class="face-mouth" id="face-mouth" d="M32,62 Q50,62 68,62"/>
+              </svg>
+            </div>
+            <div class="lbl">Seu preço<br><strong id="chart-marker-val">R$ 0,00</strong><span class="lbl-status" id="chart-marker-status">Lucro normal</span></div>
           </div>
-          <div class="chart-track">
-            <div class="chart-zone risk" id="zone-risk"></div>
-            <div class="chart-zone safe" id="zone-safe"></div>
-            <div class="chart-zone high" id="zone-high"></div>
+          <div class="chart-track-wrap" id="chart-track-wrap">
+            <div class="chart-track">
+              <div class="chart-zone risk" id="zone-risk"></div>
+              <div class="chart-zone safe" id="zone-safe"></div>
+              <div class="chart-zone high" id="zone-high"></div>
+            </div>
           </div>
+          <div class="chart-hint"><span class="drag-icon">↔️</span> arraste o círculo pra testar outros preços</div>
           <div class="chart-ticks">
             <div class="chart-tick" id="tick-min" style="left:0%"><div class="tick-line"></div>Mínimo seguro<strong id="tick-min-val">R$ 0,00</strong></div>
             <div class="chart-tick" id="tick-max" style="left:100%"><div class="tick-line"></div>Topo do mercado<strong id="tick-max-val">R$ 0,00</strong></div>
@@ -432,8 +449,8 @@
   </div>
 </footer>
 
-<script src="js/stl-parser.js?v=6"></script>
-<script src="js/calculadora.js?v=6"></script>
-<script src="js/main.js?v=6"></script>
+<script src="js/stl-parser.js?v=8"></script>
+<script src="js/calculadora.js?v=8"></script>
+<script src="js/main.js?v=8"></script>
 </body>
 </html>

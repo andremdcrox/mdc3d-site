@@ -837,18 +837,32 @@ h1, h2, h3, .font-display {
 /* ---- Gráfico de faixa de preço (mínimo / sugerido / máximo) ---- */
 .price-chart {
   position: relative;
-  padding-top: 50px;
+  padding-top: 64px;
   margin-top: 8px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.chart-track-wrap {
+  position: relative;
+  padding: 14px 0;
+  cursor: pointer;
 }
 .chart-track {
   position: relative;
-  height: 14px;
+  height: 16px;
   border-radius: 999px;
   overflow: hidden;
   display: flex;
   background: rgba(255,255,255,0.06);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+  transition: box-shadow .2s ease;
+}
+.chart-track-wrap:hover .chart-track,
+.price-chart.dragging .chart-track {
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.4), 0 0 0 3px rgba(92,139,255,0.15);
 }
 .chart-zone { height: 100%; transition: width .6s ease; }
+.price-chart.dragging .chart-zone { transition: none; }
 .chart-zone.risk { background: #d03b3b; }
 .chart-zone.safe { background: #fab219; }
 .chart-zone.high { background: #0ca30c; }
@@ -857,29 +871,82 @@ h1, h2, h3, .font-display {
   position: absolute;
   top: 0;
   transform: translateX(-50%);
-  transition: left .6s ease;
+  transition: left .35s cubic-bezier(.2,.8,.2,1);
   text-align: center;
-  z-index: 2;
+  z-index: 3;
+  touch-action: none;
+  cursor: grab;
+}
+.chart-marker:active,
+.price-chart.dragging .chart-marker {
+  cursor: grabbing;
+  transition: none;
+}
+.chart-marker .connector {
+  position: absolute;
+  left: 50%; top: 56px; bottom: -28px;
+  width: 2px;
+  margin-left: -1px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5), transparent);
 }
 .chart-marker .dot {
-  width: 14px; height: 14px;
+  position: relative;
+  width: 36px; height: 36px;
   border-radius: 50%;
   background: #fff;
-  margin: 0 auto 6px;
-  box-shadow: 0 0 0 4px rgba(92,139,255,0.35), 0 0 14px rgba(92,139,255,0.9);
-  animation: nozzlePulse 1s ease-in-out infinite alternate;
+  margin: 0 auto 8px;
+  box-shadow: 0 0 0 5px rgba(92,139,255,0.35), 0 0 18px rgba(92,139,255,0.9), 0 4px 10px rgba(0,0,0,0.4);
+  transition: box-shadow .25s ease, transform .15s ease;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
 }
+.chart-marker:hover .dot, .chart-marker:focus-visible .dot { transform: scale(1.12); }
+.chart-marker:active .dot, .price-chart.dragging .chart-marker .dot { transform: scale(1.22); }
+.chart-marker:focus-visible { outline: none; }
+.chart-marker:focus-visible .dot { box-shadow: 0 0 0 5px rgba(92,139,255,0.5), 0 0 0 8px rgba(92,139,255,0.25), 0 0 18px rgba(92,139,255,0.9); }
+
+/* ---- Carinha animada (triste/neutra/feliz conforme o status) ---- */
+.face { width: 100%; height: 100%; display: block; }
+.face-eye { fill: #2a2a35; transition: opacity .2s ease; }
+.face-eye-happy { fill: none; stroke: #2a2a35; stroke-width: 7; stroke-linecap: round; opacity: 0; transition: opacity .2s ease; }
+.face-brow { stroke: #e2554f; stroke-width: 6; stroke-linecap: round; opacity: 0; transition: opacity .2s ease; }
+.face-sweat { fill: #5c8bff; opacity: 0; transition: opacity .2s ease; }
+.face-cheek { fill: #ff9db3; opacity: 0; transition: opacity .2s ease; }
+.face-mouth { fill: none; stroke: #2a2a35; stroke-width: 6; stroke-linecap: round; }
+
+.chart-marker.status-risk .face-brow,
+.chart-marker.status-risk .face-sweat { opacity: 1; }
+.chart-marker.status-excelente .face-eye { opacity: 0; }
+.chart-marker.status-excelente .face-eye-happy,
+.chart-marker.status-excelente .face-cheek { opacity: 1; }
 .chart-marker .lbl {
   font-size: 0.72rem;
   background: var(--panel);
   border: 1px solid var(--panel-border);
-  padding: 4px 9px;
+  padding: 5px 10px;
   border-radius: 8px;
   white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
-.chart-marker .lbl strong { color: var(--text); display: block; font-size: 0.8rem; }
+.chart-marker .lbl strong { color: var(--text); display: block; font-size: 0.85rem; font-family: 'Orbitron', sans-serif; }
+.chart-marker .lbl .lbl-status { font-size: 0.65rem; display: block; margin-top: 2px; font-weight: 600; letter-spacing: .02em; }
+.chart-marker.status-risk .lbl .lbl-status { color: #ff6b6b; }
+.chart-marker.status-normal .lbl .lbl-status { color: #fab219; }
+.chart-marker.status-excelente .lbl .lbl-status { color: #28d17c; }
 
-.chart-ticks { position: relative; height: 42px; margin-top: 8px; }
+.chart-hint {
+  text-align: center;
+  font-size: 0.68rem;
+  color: #5b6a93;
+  margin-top: 4px;
+}
+.chart-hint .drag-icon { display: inline-block; animation: dragHintMove 1.8s ease-in-out infinite; }
+@keyframes dragHintMove {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+.chart-ticks { position: relative; height: 42px; margin-top: 10px; }
 .chart-tick {
   position: absolute;
   top: 0;
@@ -887,9 +954,10 @@ h1, h2, h3, .font-display {
   text-align: center;
   font-size: 0.68rem;
   color: var(--muted);
-  transition: left .6s ease;
+  transition: left .35s cubic-bezier(.2,.8,.2,1);
   white-space: nowrap;
 }
+.price-chart.dragging .chart-tick { transition: none; }
 .chart-tick .tick-line { width: 2px; height: 8px; background: var(--panel-border); margin: 0 auto 4px; }
 .chart-tick strong { display: block; color: var(--text); font-size: 0.76rem; }
 
