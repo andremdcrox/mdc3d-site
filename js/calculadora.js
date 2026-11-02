@@ -187,8 +187,22 @@ function initSTLImport() {
   });
 }
 
+function initPrinterPreset() {
+  const select = document.getElementById('printerPreset');
+  const potencia = document.getElementById('potencia');
+  if (!select || !potencia) return;
+
+  select.addEventListener('change', () => {
+    if (!select.value) return;
+    potencia.value = select.value;
+    calcular();
+    toast('Potência preenchida com base no modelo selecionado.');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initSTLImport();
+  initPrinterPreset();
 
   document.querySelectorAll('.calc-wrap input, .calc-wrap select').forEach(input => {
     input.addEventListener('input', calcular);

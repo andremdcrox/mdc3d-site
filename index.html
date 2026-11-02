@@ -21,7 +21,7 @@
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=2">
 </head>
 <body>
 
@@ -149,6 +149,28 @@
         </div>
 
         <div class="field-group-title">Máquina</div>
+        <div class="field">
+          <label>Modelo da impressora <span class="hint">preenche a potência</span></label>
+          <select id="printerPreset">
+            <option value="">Selecione (opcional) ou digite a potência manualmente</option>
+            <optgroup label="Bambu Lab — dados oficiais">
+              <option value="80">Bambu Lab A1 mini — 80W</option>
+              <option value="95">Bambu Lab A1 — 95W</option>
+              <option value="110">Bambu Lab P1P — 110W</option>
+              <option value="105">Bambu Lab P1S — 105W</option>
+              <option value="105">Bambu Lab X1C — 105W</option>
+              <option value="185">Bambu Lab X1E — 185W</option>
+              <option value="145">Bambu Lab A2L — 145W</option>
+            </optgroup>
+            <optgroup label="Outras marcas — estimativa (fabricante não publica consumo médio)">
+              <option value="110">Creality Ender 3 / similares (aberta) — ~110W</option>
+              <option value="140">Creality K1 / K1C — ~140W</option>
+              <option value="140">FlashForge Adventurer 5M / AD5X — ~140W</option>
+              <option value="130">Anycubic Kobra 3 / Kobra X — ~130W</option>
+              <option value="100">Prusa MK4 / MINI+ — ~100W</option>
+            </optgroup>
+          </select>
+        </div>
         <div class="field-row">
           <div class="field">
             <label>Tempo de impressão <span class="hint">horas</span></label>
@@ -408,8 +430,8 @@
   </div>
 </footer>
 
-<script src="js/stl-parser.js"></script>
-<script src="js/calculadora.js"></script>
-<script src="js/main.js"></script>
+<script src="js/stl-parser.js?v=2"></script>
+<script src="js/calculadora.js?v=2"></script>
+<script src="js/main.js?v=2"></script>
 </body>
 </html>
