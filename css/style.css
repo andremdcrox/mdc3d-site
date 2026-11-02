@@ -1160,7 +1160,18 @@ footer {
   background: rgba(5,4,12,0.5);
   border: 1px dashed var(--panel-border);
   color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: border-color .2s ease, color .2s ease, background .2s ease;
 }
+a.trend-keyword:hover {
+  border-color: var(--blue-strong);
+  border-style: solid;
+  color: var(--blue-strong);
+  background: rgba(92, 139, 255, 0.08);
+}
+.trend-card-foot { margin-top: 16px; }
 
 .trend-live-cta {
   text-align: center;

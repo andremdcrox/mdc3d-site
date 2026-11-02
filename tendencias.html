@@ -102,6 +102,8 @@ function renderTrends(filtro) {
   if (!grid) return;
   const lista = filtro === 'todos' ? TENDENCIAS : TENDENCIAS.filter(t => t.categoria === filtro);
 
+  const mwUrl = (termo) => 'https://makerworld.com/pt/search/models?keyword=' + encodeURIComponent(termo);
+
   grid.innerHTML = lista.map(t => `
     <div class="trend-card">
       <div class="trend-card-head">
@@ -110,7 +112,10 @@ function renderTrends(filtro) {
         <span class="trend-badge ${t.badge.indexOf('alta agora') > -1 ? 'hot' : 'evergreen'}">${t.badge}</span>
       </div>
       <p>${t.descricao}</p>
-      <div class="trend-keywords">${t.keywords.map(k => `<span class="trend-keyword">${k}</span>`).join('')}</div>
+      <div class="trend-keywords">${t.keywords.map(k => `<a class="trend-keyword" href="${mwUrl(k)}" target="_blank" rel="noopener">🔍 ${k}</a>`).join('')}</div>
+      <div class="trend-card-foot">
+        <a class="btn btn-outline btn-sm btn-block" href="${mwUrl(t.titulo)}" target="_blank" rel="noopener">Ver modelos no MakerWorld →</a>
+      </div>
     </div>
   `).join('');
 
