@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tendências de Impressão 3D | MDC 3D</title>
+<meta name="description" content="O que está mais em alta em impressão 3D agora — tendências pesquisadas com fonte real, por categoria, mais um atalho pra busca ao vivo no MakerWorld.">
+<meta name="theme-color" content="#040308">
+<link rel="canonical" href="https://andremdcrox.github.io/mdc3d-site/tendencias.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MDC 3D">
+<meta property="og:title" content="Tendências de Impressão 3D | MDC 3D">
+<meta property="og:image" content="assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=8">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html#home" class="brand"><img src="assets/logo-white.png" alt="MDC 3D"><span>MDC<span class="accent"> 3D</span></span></a>
+    <nav class="nav-links">
+      <a href="index.html#home">Início</a>
+      <a href="index.html#calculadora">Calculadora</a>
+      <a href="tendencias.html" data-page="tendencias.html" class="active">Tendências</a>
+      <a href="ajuda.html">Central de Ajuda</a>
+      <a href="index.html#contato">Contato</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="https://wa.me/5547997833437?text=Ol%C3%A1!%20Quero%20ter%20acesso%20ao%20grupo%20de%20arquivos%20STL%20%28R%2450%2C%20acesso%20vital%C3%ADcio%29." target="_blank" rel="noopener">Participe do Grupo</a>
+    <button class="nav-toggle" aria-label="Abrir menu">☰</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="section" style="padding-bottom:0;">
+    <div class="section-head" style="margin-bottom:28px;">
+      <span class="eyebrow">📊 Tendências</span>
+      <h2>O que está mais em alta em impressão 3D</h2>
+      <p>Curadoria pesquisada com fonte real — atualizada em novembro de 2026. Não é um painel ao vivo (isso exigiria uma API paga), mas todo item aqui veio de dados reais de download/popularidade.</p>
+    </div>
+
+    <div class="filters" id="trend-filters">
+      <button class="chip active" data-filter="todos">Todos</button>
+      <button class="chip" data-filter="natal">🎄 Natal</button>
+      <button class="chip" data-filter="joias">💍 Joias</button>
+      <button class="chip" data-filter="miniaturas">🗡️ Miniaturas/Cosplay</button>
+      <button class="chip" data-filter="brinquedos">🐉 Brinquedos articulados</button>
+      <button class="chip" data-filter="casa">🏠 Casa</button>
+    </div>
+
+    <div class="trend-grid" id="trend-grid">
+      <!-- preenchido via js/tendencias.js -->
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="trend-live-cta">
+      <span class="badge-soon">🔎 Dados em tempo real</span>
+      <h2>Quer ver o que está sendo buscado agora mesmo?</h2>
+      <p>O MakerWorld mantém uma página oficial com os termos de busca mais populares, atualizada regularmente por eles — é a fonte mais próxima de "tempo real" que existe sem pagar por uma API de tendências.</p>
+      <a href="https://makerworld.com/pt/more-models" target="_blank" rel="noopener" class="btn btn-primary">Ver tendências ao vivo no MakerWorld →</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="cta-banner">
+      <span class="badge-soon">🔓 Acesso vitalício</span>
+      <h2>Viu um tema que você curtiu?</h2>
+      <p>Pergunta se já tem (ou pede pra eu criar) um modelo desse estilo no grupo de STL.</p>
+      <a href="https://wa.me/5547997833437?text=Oi!%20Vi%20as%20tend%C3%AAncias%20no%20site%20e%20queria%20saber%20se%20tem%20modelos%20desse%20tema%20no%20grupo." target="_blank" rel="noopener" class="btn btn-primary">Perguntar no WhatsApp</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <a href="index.html#home" class="brand"><img src="assets/logo-white.png" alt="MDC 3D" style="height:24px;"><span>MDC<span class="accent"> 3D</span></span></a>
+      <span class="footer-credit">Criado por <a href="https://instagram.com/andremdcrox" target="_blank" rel="noopener">@andremdcrox</a></span>
+    </div>
+    <span>&copy; 2026 MDC 3D — Todos os direitos reservados.</span>
+    <div class="footer-social">
+      <a href="https://wa.me/5547997833437" target="_blank" rel="noopener">💬</a>
+      <a href="https://instagram.com/andremdcrox" target="_blank" rel="noopener">📷</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/tendencias.js?v=1"></script>
+<script>
+function renderTrends(filtro) {
+  filtro = filtro || 'todos';
+  const grid = document.getElementById('trend-grid');
+  if (!grid) return;
+  const lista = filtro === 'todos' ? TENDENCIAS : TENDENCIAS.filter(t => t.categoria === filtro);
+
+  grid.innerHTML = lista.map(t => `
+    <div class="trend-card">
+      <div class="trend-card-head">
+        <span class="trend-icon">${t.icon}</span>
+        <h3>${t.titulo}</h3>
+        <span class="trend-badge ${t.badge.indexOf('alta agora') > -1 ? 'hot' : 'evergreen'}">${t.badge}</span>
+      </div>
+      <p>${t.descricao}</p>
+      <div class="trend-keywords">${t.keywords.map(k => `<span class="trend-keyword">${k}</span>`).join('')}</div>
+    </div>
+  `).join('');
+
+  if (typeof initReveal === 'function') initReveal();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderTrends();
+  document.querySelectorAll('#trend-filters .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#trend-filters .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      renderTrends(chip.dataset.filter);
+    });
+  });
+});
+</script>
+<script src="js/main.js?v=8"></script>
+</body>
+</html>

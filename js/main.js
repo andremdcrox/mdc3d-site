@@ -75,7 +75,7 @@ function initParticles() {
 }
 
 function initReveal() {
-  const targets = document.querySelectorAll('.section-head, .card, .product-card, .step, .panel, .cta-banner, .problem-item, .brand-card, .youtube-embed, .youtube-cta');
+  const targets = document.querySelectorAll('.section-head, .card, .product-card, .step, .panel, .cta-banner, .problem-item, .brand-card, .youtube-embed, .youtube-cta, .trend-card, .trend-live-cta');
   if (!targets.length) return;
 
   targets.forEach((el, i) => {
