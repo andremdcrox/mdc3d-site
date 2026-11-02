@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de Ajuda — Problemas e Erros de Impressão 3D | MDC 3D</title>
+<meta name="description" content="Resolva os problemas mais comuns de impressão 3D (empenamento, stringing, entupimento, aderência) e encontre o código de erro da sua impressora direto na wiki oficial da marca: Bambu Lab, Creality, FlashForge, Anycubic, Prusa e Elegoo.">
+<meta name="theme-color" content="#040308">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MDC 3D">
+<meta property="og:title" content="Central de Ajuda — MDC 3D">
+<meta property="og:description" content="Resolva os problemas mais comuns de impressão 3D e encontre o código de erro da sua impressora direto na wiki oficial da marca.">
+<meta property="og:image" content="assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Central de Ajuda — MDC 3D">
+<meta name="twitter:description" content="Resolva os problemas mais comuns de impressão 3D e encontre o código de erro da sua impressora.">
+<meta name="twitter:image" content="assets/og-image.png">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html#home" class="brand"><img src="assets/logo-white.png" alt="MDC 3D"><span>MDC<span class="accent"> 3D</span></span></a>
+    <nav class="nav-links">
+      <a href="index.html#home">Início</a>
+      <a href="index.html#calculadora">Calculadora</a>
+      <a href="ajuda.html" data-page="ajuda.html" class="active">Central de Ajuda</a>
+      <a href="index.html#contato">Contato</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="https://wa.me/5547997833437" target="_blank" rel="noopener">Orçamento</a>
+    <button class="nav-toggle" aria-label="Abrir menu">☰</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="section" style="padding-bottom:0;">
+    <div class="section-head" style="margin-bottom:28px;">
+      <span class="eyebrow">🛠️ Central de ajuda</span>
+      <h2>Resolva problemas da sua impressão 3D</h2>
+      <p>Causas e soluções pros problemas mais comuns de impressão FDM — e um atalho direto pra wiki oficial da sua marca quando o problema vier com um código de erro específico.</p>
+    </div>
+
+    <div class="filters" id="problem-filters">
+      <button class="chip active" data-filter="todos">Todos</button>
+      <button class="chip" data-filter="adesao">Adesão</button>
+      <button class="chip" data-filter="extrusao">Extrusão</button>
+      <button class="chip" data-filter="mecanico">Mecânico</button>
+      <button class="chip" data-filter="temperatura">Temperatura</button>
+      <button class="chip" data-filter="acabamento">Acabamento</button>
+    </div>
+
+    <div class="problem-list" id="problem-list">
+      <!-- preenchido via js/ajuda.js -->
+    </div>
+  </section>
+
+  <!-- ESPAÇO DE ANÚNCIO — ver instruções em index.html junto do primeiro bloco .ad-slot -->
+  <section class="section" style="padding-top:0; padding-bottom:0;">
+    <div class="ad-slot" id="ad-slot-ajuda-1">
+      <span class="ad-slot-label">Publicidade</span>
+      <div class="ad-slot-placeholder">Espaço reservado para anúncio</div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="section-head">
+      <span class="eyebrow">🔎 Código de erro na tela?</span>
+      <h2>Encontre direto na fonte oficial</h2>
+      <p>Os códigos de erro mudam de marca pra marca — e até de modelo pra modelo dentro da mesma marca. Por isso, em vez de arriscar uma informação errada, levamos você direto pra wiki oficial de cada fabricante.</p>
+    </div>
+    <div class="brand-grid" id="brand-grid">
+      <!-- preenchido via js/ajuda.js -->
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="cta-banner">
+      <span class="badge-soon">🧮 Ferramenta gratuita</span>
+      <h2>Já calculou o preço da sua peça?</h2>
+      <p>Depois de resolver o problema de impressão, descubra quanto cobrar sem sair no prejuízo.</p>
+      <a href="index.html#calculadora" class="btn btn-primary">Ir para a Calculadora</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <a href="index.html#home" class="brand"><img src="assets/logo-white.png" alt="MDC 3D" style="height:24px;"><span>MDC<span class="accent"> 3D</span></span></a>
+      <span class="footer-credit">Criado por <a href="https://instagram.com/andremdcrox" target="_blank" rel="noopener">@andremdcrox</a></span>
+    </div>
+    <span>&copy; 2026 MDC 3D — Todos os direitos reservados.</span>
+    <div class="footer-social">
+      <a href="https://wa.me/5547997833437" target="_blank" rel="noopener">💬</a>
+      <a href="https://instagram.com/andremdcrox" target="_blank" rel="noopener">📷</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/problemas.js"></script>
+<script src="js/ajuda.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

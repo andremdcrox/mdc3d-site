@@ -1,0 +1,415 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MDC 3D — Calculadora de Preço de Impressão 3D</title>
+<meta name="description" content="Calculadora gratuita de preço de impressão 3D: descubra quanto gasta e qual a faixa de preço (mínimo seguro até o teto de mercado) pra vender sua peça sem prejuízo.">
+<meta name="theme-color" content="#040308">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MDC 3D">
+<meta property="og:title" content="MDC 3D — Calculadora de Preço de Impressão 3D">
+<meta property="og:description" content="Descubra quanto gasta e qual a faixa de preço ideal pra vender sua peça sem sair no prejuízo.">
+<meta property="og:image" content="assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MDC 3D — Calculadora de Preço de Impressão 3D">
+<meta name="twitter:description" content="Descubra quanto gasta e qual a faixa de preço ideal pra vender sua peça sem sair no prejuízo.">
+<meta name="twitter:image" content="assets/og-image.png">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html#home" class="brand"><img src="assets/logo-white.png" alt="MDC 3D"><span>MDC<span class="accent"> 3D</span></span></a>
+    <nav class="nav-links">
+      <a href="index.html#home" data-page="index.html" class="active">Início</a>
+      <a href="index.html#calculadora">Calculadora</a>
+      <a href="ajuda.html">Central de Ajuda</a>
+      <a href="index.html#como-funciona">Como Funciona</a>
+      <a href="index.html#contato">Contato</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="https://wa.me/5547997833437" target="_blank" rel="noopener">Orçamento</a>
+    <button class="nav-toggle" aria-label="Abrir menu">☰</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div>
+      <span class="eyebrow">🧮 Ferramenta gratuita</span>
+      <h1>CALCULE O PREÇO CERTO<br>DA SUA <span class="grad">IMPRESSÃO 3D</span></h1>
+      <p class="lead">Descubra quanto você realmente gasta — material, energia, desgaste da máquina e mão de obra — e veja a faixa de preço ideal pra vender sem sair no prejuízo.</p>
+      <div class="hero-actions">
+        <a href="#calculadora" class="btn btn-primary">Ir para a Calculadora</a>
+        <a href="https://wa.me/5547997833437" target="_blank" rel="noopener" class="btn btn-outline">Falar no WhatsApp</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="printer-scene">
+        <svg class="printer-frame" viewBox="0 0 100 100" fill="none">
+          <!-- pés -->
+          <rect x="9" y="90" width="7" height="3" rx="1.5" fill="url(#fg)" opacity="0.85"/>
+          <rect x="84" y="90" width="7" height="3" rx="1.5" fill="url(#fg)" opacity="0.85"/>
+          <!-- chassi / base -->
+          <rect x="10" y="83" width="80" height="9" rx="3" fill="url(#fg)"/>
+          <rect x="17" y="85.3" width="15" height="4.4" rx="1.1" fill="#070613" opacity="0.85"/>
+          <circle cx="78" cy="87.5" r="1.3" fill="#070613" opacity="0.85"/>
+          <!-- colunas -->
+          <rect x="15" y="20" width="6" height="64" rx="3" fill="url(#fg)"/>
+          <rect x="79" y="20" width="6" height="64" rx="3" fill="url(#fg)"/>
+          <!-- barra superior -->
+          <rect x="13" y="15" width="74" height="5" rx="2.5" fill="url(#fg)"/>
+          <!-- caixa do motor -->
+          <rect x="75" y="9" width="11" height="10" rx="2" fill="url(#fg)" opacity="0.9"/>
+          <circle cx="80.5" cy="14" r="1.3" fill="#070613" opacity="0.85"/>
+          <defs>
+            <linearGradient id="fg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="100" y2="100">
+              <stop offset="0" stop-color="#5c8bff"/>
+              <stop offset="1" stop-color="#b06bff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="print-object">
+          <div class="logo-fill"></div>
+        </div>
+        <div class="bed"></div>
+        <div class="head-rail"></div>
+        <div class="head-track">
+          <div class="head-jitter"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALCULADORA -->
+  <section class="section" id="calculadora" style="padding-top:10px;">
+    <div class="section-head">
+      <span class="eyebrow">💰 Sem prejuízo</span>
+      <h2>Quanto cobrar pela sua peça?</h2>
+      <p>Preencha os campos abaixo. A calculadora mostra o custo real de produção, o preço mínimo seguro e o teto praticado no mercado.</p>
+    </div>
+
+    <div class="calc-wrap">
+      <!-- FORM -->
+      <div class="panel">
+
+        <div class="field-group-title">📥 Importar STL ou 3MF <span class="hint">opcional</span></div>
+        <div class="stl-dropzone" id="stlDropzone">
+          <input type="file" id="stlFile" accept=".stl,.3mf" hidden>
+          <div class="stl-dropzone-text">
+            <strong id="stlDropzoneLabel">Clique ou arraste seu arquivo .stl ou .3mf aqui</strong>
+            <span>Calculamos o volume e já preenchemos o peso — processado no seu navegador, o arquivo não é enviado a lugar nenhum</span>
+          </div>
+        </div>
+        <div class="field-row" style="margin-top:12px;">
+          <div class="field">
+            <label>Material <span class="hint">densidade</span></label>
+            <select id="stlMaterial">
+              <option value="1.24">PLA</option>
+              <option value="1.27">PETG</option>
+              <option value="1.04">ABS</option>
+              <option value="1.21">TPU</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Preenchimento <span class="hint">%</span></label>
+            <input type="number" id="stlInfill" value="20" min="0" max="100" step="5">
+          </div>
+        </div>
+        <div class="stl-result" id="stlResult" style="display:none;">
+          <div>Volume do modelo: <strong id="stlVolume">—</strong></div>
+          <div>Dimensões: <strong id="stlDims">—</strong></div>
+          <div>Peso estimado: <strong id="stlWeight">—</strong></div>
+          <div class="stl-note">Estimativa aproximada (considera preenchimento + paredes). O peso real pode variar conforme as configurações do seu fatiador.</div>
+        </div>
+
+        <div class="field-group-title">Material</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Peso da peça <span class="hint">gramas</span></label>
+            <input type="number" id="peso" value="50" min="0" step="1">
+          </div>
+          <div class="field">
+            <label>Preço do filamento <span class="hint">R$ / kg</span></label>
+            <input type="number" id="filamento" value="90" min="0" step="1">
+          </div>
+        </div>
+        <div class="field">
+          <label>Perda / falhas de impressão <span class="hint">%</span></label>
+          <input type="number" id="perda" value="10" min="0" step="1">
+        </div>
+
+        <div class="field-group-title">Máquina</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Tempo de impressão <span class="hint">horas</span></label>
+            <input type="number" id="tempo" value="3" min="0" step="0.1">
+          </div>
+          <div class="field">
+            <label>Potência da impressora <span class="hint">watts</span></label>
+            <input type="number" id="potencia" value="120" min="0" step="1">
+          </div>
+        </div>
+        <div class="field">
+          <label>Preço da energia <span class="hint">R$ / kWh</span></label>
+          <input type="number" id="kwh" value="0.85" min="0" step="0.01">
+        </div>
+        <div class="field">
+          <label>Desgaste / depreciação da máquina <span class="hint">R$ / hora</span></label>
+          <input type="number" id="desgaste" value="2" min="0" step="0.1">
+        </div>
+        <details class="subcalc">
+          <summary>Não sabe esse valor? Calcular automaticamente</summary>
+          <div class="subcalc-body">
+            <div class="field">
+              <label>Valor da impressora <span class="hint">R$</span></label>
+              <input type="number" id="valorImpressora" value="2000" min="0" step="10">
+            </div>
+            <div class="field">
+              <label>Vida útil estimada <span class="hint">horas</span></label>
+              <input type="number" id="vidaUtil" value="4000" min="1" step="100">
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" id="aplicarDesgaste">Aplicar</button>
+          </div>
+        </details>
+
+        <div class="field-group-title">Mão de obra e extras</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Pós-processamento <span class="hint">horas</span></label>
+            <input type="number" id="tempoPos" value="0.5" min="0" step="0.1">
+          </div>
+          <div class="field">
+            <label>Valor da sua hora <span class="hint">R$ / hora</span></label>
+            <input type="number" id="valorHora" value="20" min="0" step="1">
+          </div>
+        </div>
+        <div class="field">
+          <label>Embalagem / extras <span class="hint">R$</span></label>
+          <input type="number" id="embalagem" value="0" min="0" step="1">
+        </div>
+
+        <div class="field-group-title">Venda</div>
+        <div class="field-row">
+          <div class="field">
+            <label>Taxa da maquininha/Pix <span class="hint">%</span></label>
+            <input type="number" id="taxa" value="6" min="0" step="1">
+          </div>
+          <div class="field">
+            <label>Margem de lucro desejada <span class="hint">%</span></label>
+            <input type="number" id="margem" value="60" min="0" step="5">
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTADO -->
+      <div class="panel">
+        <div class="result-list">
+          <div class="result-row"><span>Material (com perda)</span><span class="val" id="r-material">R$ 0,00</span></div>
+          <div class="result-row"><span>Energia</span><span class="val" id="r-energia">R$ 0,00</span></div>
+          <div class="result-row"><span>Desgaste da máquina</span><span class="val" id="r-desgaste">R$ 0,00</span></div>
+          <div class="result-row"><span>Mão de obra</span><span class="val" id="r-maoobra">R$ 0,00</span></div>
+          <div class="result-row"><span>Embalagem / extras</span><span class="val" id="r-embalagem">R$ 0,00</span></div>
+          <div class="result-row"><span>Custo total de produção</span><span class="val" id="r-total">R$ 0,00</span></div>
+        </div>
+
+        <div class="result-highlights">
+          <div class="highlight-box" id="box-preco">
+            <div class="hl-label">Preço sugerido</div>
+            <div class="hl-value" id="r-final">R$ 0,00</div>
+          </div>
+          <div class="highlight-box profit" id="box-lucro">
+            <div class="hl-label">Lucro estimado</div>
+            <div class="hl-value" id="r-lucro">R$ 0,00</div>
+          </div>
+        </div>
+
+        <div class="status-banner" id="status-banner">
+          <span id="status-icon">✅</span> <span id="status-text">Lucro excelente</span>
+        </div>
+
+        <div class="price-chart">
+          <div class="chart-marker" id="chart-marker" style="left:50%">
+            <div class="dot"></div>
+            <div class="lbl">Seu preço<br><strong id="chart-marker-val">R$ 0,00</strong></div>
+          </div>
+          <div class="chart-track">
+            <div class="chart-zone risk" id="zone-risk"></div>
+            <div class="chart-zone safe" id="zone-safe"></div>
+            <div class="chart-zone high" id="zone-high"></div>
+          </div>
+          <div class="chart-ticks">
+            <div class="chart-tick" id="tick-min" style="left:0%"><div class="tick-line"></div>Mínimo seguro<strong id="tick-min-val">R$ 0,00</strong></div>
+            <div class="chart-tick" id="tick-max" style="left:100%"><div class="tick-line"></div>Topo do mercado<strong id="tick-max-val">R$ 0,00</strong></div>
+          </div>
+          <div class="chart-legend">
+            <span><i class="risk"></i>⚠️ Sem margem / prejuízo</span>
+            <span><i class="safe"></i>🟠 Lucro normal</span>
+            <span><i class="high"></i>✅ Lucro excelente</span>
+          </div>
+          <div class="chart-note">
+            Vermelho = abaixo do custo real + margem de segurança (prejuízo). Laranja = dentro da faixa que o mercado já pratica (lucro normal). Verde = no teto ou acima do que é praticado (lucro excelente). Mínimo = custo total + 30% de colchão de segurança, já descontando a taxa de venda. Topo = até 3× o custo total — referência baseada em práticas comuns de precificação de impressão 3D citadas por guias do setor, não é uma busca ao vivo no mercado.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="section" id="como-funciona">
+    <div class="section-head">
+      <h2>Como funciona a calculadora</h2>
+      <p>Quatro passos pra você nunca mais vender no prejuízo.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="num">01</div>
+        <h3>Preencha os dados</h3>
+        <p>Peso, tempo de impressão, energia, desgaste da máquina e mão de obra.</p>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <h3>Veja o custo real</h3>
+        <p>Tudo somado — incluindo taxas de pagamento e perdas por falha de impressão.</p>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <h3>Descubra a faixa de preço</h3>
+        <p>Do mínimo seguro ao teto praticado no mercado, num gráfico visual.</p>
+      </div>
+      <div class="step">
+        <div class="num">04</div>
+        <h3>Venda com confiança</h3>
+        <p>Saiba exatamente seu lucro antes mesmo de publicar o anúncio.</p>
+      </div>
+    </div>
+  </section>
+
+  <!--
+    ESPAÇO DE ANÚNCIO (Google AdSense ou outra rede)
+    Quando tiver a conta aprovada:
+    1. Cole o script de carregamento do AdSense uma vez no <head> de cada página:
+       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-SEUCODIGO" crossorigin="anonymous"></script>
+    2. Troque o conteúdo da div .ad-slot-placeholder abaixo pelo bloco <ins class="adsbygoogle">...</ins> que o AdSense te der.
+  -->
+  <section class="section" style="padding-top:0; padding-bottom:0;">
+    <div class="ad-slot" id="ad-slot-home-1">
+      <span class="ad-slot-label">Publicidade</span>
+      <div class="ad-slot-placeholder">Espaço reservado para anúncio</div>
+    </div>
+  </section>
+
+  <!-- MODELAGEM POR IA -->
+  <section class="section">
+    <div class="section-head">
+      <span class="eyebrow">✨ Sob encomenda</span>
+      <h2>Transforme uma foto em arquivo <span class="grad">STL</span></h2>
+      <p>Manda a foto do objeto que você quer e a gente modela com IA + ajuste manual, otimizado pra imprimir rápido e gastar pouco filamento.</p>
+    </div>
+    <div class="calc-wrap">
+      <div class="panel">
+        <div class="field-group-title">O que está incluso</div>
+        <div class="result-list">
+          <div class="result-row"><span>Modelo 3D gerado a partir da sua foto</span><span class="val">✅</span></div>
+          <div class="result-row"><span>Ajuste e limpeza manual do modelo</span><span class="val">✅</span></div>
+          <div class="result-row"><span>Arquivo otimizado — leve e rápido de imprimir</span><span class="val">✅</span></div>
+          <div class="result-row"><span>Entrega combinada direto no WhatsApp</span><span class="val">✅</span></div>
+        </div>
+      </div>
+      <div class="panel" style="display:flex; flex-direction:column; justify-content:center;">
+        <div class="result-final">
+          <div class="label">Valor fixo</div>
+          <div class="price">R$ 50,00</div>
+          <div class="sub">por modelo, pagamento combinado no WhatsApp</div>
+        </div>
+        <a href="https://wa.me/5547997833437?text=Ol%C3%A1!%20Quero%20encomendar%20uma%20modelagem%203D%20por%20IA%20%28R%2450%29%20a%20partir%20de%20uma%20foto.%20Vou%20te%20mandar%20a%20imagem%20do%20objeto!" target="_blank" rel="noopener" class="btn btn-primary btn-block" style="margin-top:20px;">Pedir meu modelo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- YOUTUBE -->
+  <section class="section">
+    <div class="section-head">
+      <span class="eyebrow">📺 YouTube</span>
+      <h2>Acompanhe o canal <span class="grad">Mestre dos Códigos</span></h2>
+      <p>Tutoriais, solução de erros e dicas de impressão 3D — toda semana por lá.</p>
+    </div>
+    <div class="youtube-wrap">
+      <div class="youtube-embed">
+        <iframe src="https://www.youtube.com/embed/Ve6p8yI0_Eg" title="Como Resolver Erro 105 e Erro 113 na Flashforge AD5X — Mestre dos Códigos" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="youtube-cta">
+        <div class="icon-box">▶️</div>
+        <h3>Mestre dos Códigos</h3>
+        <div class="yt-handle">@AndreMdcRox</div>
+        <p>Erros de impressora resolvidos passo a passo, novidades e dicas práticas de impressão 3D.</p>
+        <a href="https://www.youtube.com/@AndreMdcRox?sub_confirmation=1" target="_blank" rel="noopener" class="btn btn-primary">Inscrever-se no canal</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOAÇÃO -->
+  <section class="section">
+    <div class="cta-banner">
+      <span class="badge-soon">💙 Apoie o projeto</span>
+      <h2>Ajude o MDC 3D a continuar no ar</h2>
+      <p>Manter o site, a calculadora e os conteúdos gratuitos no ar tem custo. Qualquer valor ajuda — e muito.</p>
+      <a href="https://wa.me/5547997833437?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20uma%20doa%C3%A7%C3%A3o%20para%20ajudar%20o%20site%20MDC%203D%20a%20se%20manter%20online%20%F0%9F%92%99" target="_blank" rel="noopener" class="btn btn-primary">Quero ajudar</a>
+    </div>
+  </section>
+
+  <!-- CONTATO -->
+  <section class="section" id="contato">
+    <div class="section-head">
+      <h2>Contato</h2>
+      <p>Fale com a gente para orçamentos, dúvidas ou projetos personalizados.</p>
+    </div>
+    <div class="grid-3">
+      <a href="https://wa.me/5547997833437" target="_blank" rel="noopener" class="card" style="text-align:center;">
+        <div class="icon-box" style="margin:0 auto 16px;">💬</div>
+        <h3>WhatsApp</h3>
+        <p>Resposta rápida para orçamentos</p>
+      </a>
+      <a href="mailto:contato@mdc3d.com.br" class="card" style="text-align:center;">
+        <div class="icon-box" style="margin:0 auto 16px;">✉️</div>
+        <h3>E-mail</h3>
+        <p>contato@mdc3d.com.br</p>
+      </a>
+      <a href="https://instagram.com/andremdcrox" target="_blank" rel="noopener" class="card" style="text-align:center;">
+        <div class="icon-box" style="margin:0 auto 16px;">📷</div>
+        <h3>Instagram</h3>
+        <p>@andremdcrox</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <a href="index.html#home" class="brand"><img src="assets/logo-white.png" alt="MDC 3D" style="height:24px;"><span>MDC<span class="accent"> 3D</span></span></a>
+      <span class="footer-credit">Criado por <a href="https://instagram.com/andremdcrox" target="_blank" rel="noopener">@andremdcrox</a></span>
+    </div>
+    <span>&copy; 2026 MDC 3D — Todos os direitos reservados.</span>
+    <div class="footer-social">
+      <a href="https://wa.me/5547997833437" target="_blank" rel="noopener">💬</a>
+      <a href="https://instagram.com/andremdcrox" target="_blank" rel="noopener">📷</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/stl-parser.js"></script>
+<script src="js/calculadora.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

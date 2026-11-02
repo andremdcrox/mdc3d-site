@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo — MDC 3D</title>
+<meta name="theme-color" content="#040308">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MDC 3D">
+<meta property="og:title" content="Catálogo — MDC 3D">
+<meta property="og:image" content="assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="brand"><img src="assets/logo-white.png" alt="MDC 3D"><span>MDC<span class="accent"> 3D</span></span></a>
+    <nav class="nav-links">
+      <a href="index.html#home">Início</a>
+      <a href="index.html#servicos">Serviços</a>
+      <a href="catalogo.html" data-page="catalogo.html" class="active">Catálogo</a>
+      <a href="calculadora.html">Calculadora</a>
+      <a href="index.html#como-funciona">Como Funciona</a>
+      <a href="index.html#contato">Contato</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="https://wa.me/5547997833437" target="_blank" rel="noopener">Orçamento</a>
+    <button class="nav-toggle" aria-label="Abrir menu">☰</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="section" style="padding-bottom:0;">
+    <div class="section-head" style="margin-bottom:28px;">
+      <span class="eyebrow">📁 Arquivos digitais</span>
+      <h2>Catálogo de Arquivos STL</h2>
+      <p>Modelos 100% autorais, criados com IA por MDC 3D. Download liberado logo após a confirmação do pagamento.</p>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="chip active" data-filter="todos">Todos</button>
+      <button class="chip" data-filter="colecionavel">Colecionáveis</button>
+      <button class="chip" data-filter="funcional">Funcionais</button>
+      <button class="chip" data-filter="chaveiro">Chaveiros</button>
+      <button class="chip" data-filter="decoracao">Decoração</button>
+    </div>
+
+    <div class="product-grid" id="product-grid">
+      <!-- produtos injetados via JS a partir de produtos.js -->
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="cta-banner">
+      <span class="badge-soon">🖨️ Em breve</span>
+      <h2>Produtos Impressos</h2>
+      <p>Além dos arquivos digitais, em breve você poderá comprar peças já impressas e prontas, direto pelo site.</p>
+      <a href="https://wa.me/5547997833437" target="_blank" rel="noopener" class="btn btn-ghost">Tenho interesse</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <a href="index.html" class="brand"><img src="assets/logo-white.png" alt="MDC 3D" style="height:24px;"><span>MDC<span class="accent"> 3D</span></span></a>
+      <span class="footer-credit">Criado por <a href="https://instagram.com/andremdcrox" target="_blank" rel="noopener">@andremdcrox</a></span>
+    </div>
+    <span>&copy; 2026 MDC 3D — Todos os direitos reservados.</span>
+    <div class="footer-social">
+      <a href="https://wa.me/5547997833437" target="_blank" rel="noopener">💬</a>
+      <a href="https://instagram.com/andremdcrox" target="_blank" rel="noopener">📷</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/produtos.js"></script>
+<script src="js/catalogo.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
